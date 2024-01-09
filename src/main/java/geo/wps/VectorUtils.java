@@ -10,6 +10,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -23,11 +26,6 @@ import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.referencing.operation.MathTransform;
 
 /**
  *
@@ -115,7 +113,7 @@ public class VectorUtils {
 
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(tb.buildFeatureType());
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
-        
+
         b.add(geom);
         b.add(1);
         features.add(b.buildFeature(0 + ""));

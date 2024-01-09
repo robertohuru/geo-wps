@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-  <bean id="length" class="gipwps.gip.wps.Length"/>
-  <bean id="splitPolygon" class="gipwps.gip.wps.SplitPolygonProcess"/>
-  <bean id="geometryArea" class="gipwps.gip.wps.GetAreaProcess"/>
-  <bean id="coordinateTransform" class="gipwps.gip.wps.CordinateTransform"/>
+  <bean id="length" class="geo.wps.Length"/>
+  <bean id="splitPolygon" class="geo.wps.SplitPolygonProcess"/>
+  <bean id="geometryArea" class="geo.wps.GetAreaProcess"/>
+  <bean id="coordinateTransform" class="geo.wps.CordinateTransform"/>
 </beans>

@@ -1,4 +1,4 @@
-gipwps.gip.wps.Length
-gipwps.gip.wps.SplitPolygonProcess
-gipwps.gip.wps.GetAreaProcess
-gipwps.gip.wps.CordinateTransform
+geo.wps.Length
+geo.wps.SplitPolygonProcess
+geo.wps.GetAreaProcess
+geo.wps.CordinateTransform
