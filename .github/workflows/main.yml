@@ -1,17 +1,15 @@
 name: check-tool
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
+  workflow_dispatch:
 jobs:
-  build:
+  tortellini:
     runs-on: ubuntu-latest
-    name: check-tool
     steps:
       - name: tortellini-action
         uses: tortellini-tools/action@v3
+        with:
+          name: tortellini-result
+          path: .tortellini/out
         
           
             
