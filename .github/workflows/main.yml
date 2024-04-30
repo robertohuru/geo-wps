@@ -7,9 +7,6 @@ jobs:
     steps:
       - name: tortellini-action
         uses: tortellini-tools/action@v3
-        with:
-          name: tortellini-result
-          path: .tortellini/out
         
           
             
