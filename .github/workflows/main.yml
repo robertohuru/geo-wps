@@ -1,0 +1,17 @@
+name: check-tool
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: check-tool
+    steps:
+      - name: tortellini-action
+        uses: tortellini-tools/action@v3
+        
+          
+            
