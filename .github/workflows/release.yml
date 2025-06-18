@@ -100,7 +100,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add config.json
-          git commit -m "chore: update config.json to version $VERSION"
+          git commit -m "Update config.json to version $VERSION"
           git push origin main
     
       - name: Create GitHub release
