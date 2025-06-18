@@ -82,21 +82,18 @@ jobs:
           git config user.email "github-actions[bot]@github.com"
           git tag ${{ steps.bump_version.outputs.new_tag }}
           git push origin ${{ steps.bump_version.outputs.new_tag }}
-      
-      - name: Ensure config.json exists
-        run: |
-          if [ ! -f config.json ]; then
-            echo '{"general": {"version": "0.0.0"}}' > config.json
-          fi
           
-      - name: Update config.json with new version
+      - name: Update config.json with new version and release date
         run: |
           VERSION=${{ steps.bump_version.outputs.new_tag }}
           VERSION=${VERSION#v}
+          RELEASE_DATE=$(date -u +"%Y/%m/%d %H:%M:%SZ")
 
           # Update the version field using jq
-          jq --arg v "$VERSION" '.general.version = $v' config.json > config.json.tmp && mv config.json.tmp config.json
-          
+          jq --arg v "$VERSION" --arg d "$RELEASE_DATE" \
+            '.general.version = $v | .general.release_date = $d' \
+            config.json > config.json.tmp && mv config.json.tmp config.json
+            
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add config.json
