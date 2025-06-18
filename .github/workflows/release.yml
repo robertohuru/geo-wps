@@ -18,10 +18,80 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-         
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          TAG=$(git tag --sort=-v:refname | grep '^v' | head -n 1 || echo "")
+          if [ -z "$TAG" ]; then
+            TAG="v0.0.0"
+          fi
+          echo "Latest tag: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Determine bump type from PR labels
+        id: bump_type
+        run: |
+          labels=$(gh pr view ${{ github.event.pull_request.number }} --json labels --jq '.labels[].name')
+          echo "Labels: $labels"
+          if echo "$labels" | grep -q 'release:major'; then
+            echo "Bumping major"
+            echo "bump=major" >> $GITHUB_OUTPUT
+          elif echo "$labels" | grep -q 'release:minor'; then
+            echo "Bumping minor"
+            echo "bump=minor" >> $GITHUB_OUTPUT
+          else
+            echo "Bumping patch"
+            echo "bump=patch" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine the next version
+        id: bump_version
+        run: |
+          version=${{ steps.get_latest_tag.outputs.tag }}
+          version=${version#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$version"
+      
+          case "${{ steps.bump_type.outputs.bump }}" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+      
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "New version: $NEW_TAG"
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@github.com"
+          git tag ${{ steps.bump_version.outputs.new_tag }}
+          git push origin ${{ steps.bump_version.outputs.new_tag }}
+      
+      - name: Ensure config.json exists
+        run: |
+          if [ ! -f config.json ]; then
+            echo '{"general": {"version": "0.0.0"}}' > config.json
+          fi
+          
       - name: Update config.json with new version
         run: |
-          VERSION=${{ github.ref }}
+          VERSION=${{ steps.bump_version.outputs.new_tag }}
           VERSION=${VERSION#v}
 
           # Update the version field using jq
@@ -30,16 +100,12 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add config.json
-          git commit -m "update config.json to version $VERSION"
+          git commit -m "chore: update config.json to version $VERSION"
           git push origin main
     
-      - name: Create release from tag
-        id: create-release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          prerelease: false
-          draft: false
+          tag_name: ${{ steps.bump_version.outputs.new_tag }}
+          name: Release ${{ steps.bump_version.outputs.new_tag }}
+          generate_release_notes: true
