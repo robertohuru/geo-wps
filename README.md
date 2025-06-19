@@ -1,2 +1,2 @@
 # GeoServer WPS
-OGC standardized WPS for GeoServer.
+OGC standardized WPS for GeoServer
