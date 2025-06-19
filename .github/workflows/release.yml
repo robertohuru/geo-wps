@@ -82,6 +82,11 @@ jobs:
           git config user.email "github-actions[bot]@github.com"
           git tag ${{ steps.bump_version.outputs.new_tag }}
           git push origin ${{ steps.bump_version.outputs.new_tag }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: release
           
       - name: Update config.json with new version and release date
         run: |
@@ -98,7 +103,7 @@ jobs:
           git config user.email "github-actions@github.com"
           git add config.json
           git commit -m "Update config.json to version $VERSION"
-          git push origin main
+          git push origin release
     
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
